@@ -2,7 +2,7 @@
 <transformation>
   <info>
     <name>ETL-D05_DimCategoria</name>
-    <description>Carga DimCategoria desde BD_TRANSACCIONAL.SUBCATEGORIA + CATEGORIA</description>
+    <description>Carga DimCategoria desde ${SRC_DB_NAME}.SUBCATEGORIA + ${SRC_DB_NAME}.CATEGORIA</description>
     <extended_description/>
     <trans_version/>
     <trans_type>Normal</trans_type>
@@ -435,7 +435,7 @@
     <server>localhost</server>
     <type>POSTGRESQL</type>
     <access>Native</access>
-    <database>proyectoMainBI</database>
+    <database>${DB_NAME}</database>
     <port>5432</port>
     <username>postgres</username>
     <password>Encrypted 2be98afc86aa7f2e4cb1aa763d79eaed8</password>
@@ -509,8 +509,8 @@
        sc.nb_sub_categoria AS NombreSubcategoria,
        c.cod_categoria AS CodigoCategoria,
        c.nb_categoria AS NombreCategoria
-FROM BD_TRANSACCIONAL.SUBCATEGORIA sc
-INNER JOIN BD_TRANSACCIONAL.CATEGORIA c ON sc.cod_categoria = c.cod_categoria;</sql>
+FROM ${SRC_DB_NAME}.SUBCATEGORIA sc
+INNER JOIN ${SRC_DB_NAME}.CATEGORIA c ON sc.cod_categoria = c.cod_categoria;</sql>
     <limit>0</limit>
     <lookup/>
     <execute_each_row>N</execute_each_row>

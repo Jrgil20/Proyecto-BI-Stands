@@ -13,7 +13,7 @@ Plantillas y scripts de soporte para implementar los procesos ETL descritos en l
 - `scripts/align_sequences.sql` - script para alinear secuencias DB con valores actuales. 🔧
 
 ## Cómo arrancar (dev)
-1. Editar `kettle.properties` con las credenciales de DB.
+1. Editar `kettle.properties` con las credenciales de DB. (Nota: `DB_NAME` por defecto es `alquilerStands`.)
 2. Validar que `AlquilerStands-DB.sql` ya fue ejecutado en la BD (tablas y secuencias creadas).
 3. Abrir Spoon y completar los `.ktr` exportándolos desde aquí o reemplazando contenido con transformaciones reales.
 4. Ejecutar `job_load_dimensions.kjb` y revisar `tests/sql_validation_checks.sql`.

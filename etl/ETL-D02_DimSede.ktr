@@ -2,7 +2,7 @@
 <transformation>
   <info>
     <name>ETL-D02_DimSede</name>
-    <description>Carga DimSede desde BD_TRANSACCIONAL.SEDE + CIUDAD + PAIS</description>
+    <description>Carga DimSede desde ${SRC_DB_NAME}.SEDE + ${SRC_DB_NAME}.CIUDAD + ${SRC_DB_NAME}.PAIS</description>
     <trans_type>Normal</trans_type>
   </info>
   <connection>
@@ -10,7 +10,7 @@
     <server>localhost</server>
     <type>POSTGRESQL</type>
     <access>Native</access>
-    <database>proyectoMainBI</database>
+    <database>${DB_NAME}</database>
     <port>5432</port>
     <username>postgres</username>
     <password>Encrypted 2be98afc86aa7f2e4cb1aa763d79eaed8</password>
@@ -21,9 +21,9 @@
     <type>TableInput</type>
     <connection>BI</connection>
     <sql>SELECT s.cod_sede AS CodigoSede, s.nb_sede AS NombreSede, c.nb_ciudad AS Ciudad, p.nb_pais AS Pais
-FROM BD_TRANSACCIONAL.SEDE s
-INNER JOIN BD_TRANSACCIONAL.CIUDAD c ON s.cod_ciudad = c.cod_ciudad
-INNER JOIN BD_TRANSACCIONAL.PAIS p ON c.cod_pais = p.cod_pais</sql>
+FROM ${SRC_DB_NAME}.SEDE s
+INNER JOIN ${SRC_DB_NAME}.CIUDAD c ON s.cod_ciudad = c.cod_ciudad
+INNER JOIN ${SRC_DB_NAME}.PAIS p ON c.cod_pais = p.cod_pais</sql>
     <GUI>
       <xloc>144</xloc>
       <yloc>128</yloc>

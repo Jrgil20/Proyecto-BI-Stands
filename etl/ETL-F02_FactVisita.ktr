@@ -1,6 +1,6 @@
 <!-- Skeleton transformation: ETL-F02_FactVisita.ktr -->
 <!-- Steps to implement:
-  1. Table Input: SELECT * FROM BD_TRANSACCIONAL.ENTRADA
+  1. Table Input: SELECT * FROM ${SRC_DB_NAME}.ENTRADA
   2. Calculate hora_redondeada: if minute < 30 -> HH:00 else HH:30
   3. Database Lookup: DimEvento, DimTiempo (Fecha), DimHora (Hora24h = hora_redondeada), DimVisitante, DimCalificacion
   4. Filter Rows: exclude lookups failed (log the failures)

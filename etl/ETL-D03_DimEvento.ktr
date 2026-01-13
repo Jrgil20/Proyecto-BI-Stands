@@ -2,7 +2,7 @@
 <transformation>
   <info>
     <name>ETL-D03_DimEvento</name>
-    <description>Transformación para cargar DimEvento desde BD_TRANSACCIONAL.EVENTO y TIPO_EVENTO</description>
+    <description>Transformación para cargar DimEvento desde ${SRC_DB_NAME}.EVENTO y ${SRC_DB_NAME}.TIPO_EVENTO</description>
     <trans_type>Normal</trans_type>
   </info>
   <connection>
@@ -10,7 +10,7 @@
     <server>localhost</server>
     <type>POSTGRESQL</type>
     <access>Native</access>
-    <database>proyectoMainBI</database>
+    <database>${DB_NAME}</database>
     <port>5432</port>
     <username>postgres</username>
     <password>Encrypted 2be98afc86aa7f2e4cb1aa763d79eaed8</password>
@@ -26,8 +26,8 @@
   e.nb_evento AS NombreEvento,
   e.descripcion AS Descripcion,
   te.nb_tipo_evento AS TipoEvento
-FROM BD_TRANSACCIONAL.EVENTO e
-INNER JOIN BD_TRANSACCIONAL.TIPO_EVENTO te ON e.cod_tipo_evento = te.cod_tipo_evento
+FROM ${SRC_DB_NAME}.EVENTO e
+INNER JOIN ${SRC_DB_NAME}.TIPO_EVENTO te ON e.cod_tipo_evento = te.cod_tipo_evento
 </sql>
     <GUI>
       <xloc>144</xloc>

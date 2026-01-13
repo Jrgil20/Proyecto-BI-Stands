@@ -9,7 +9,7 @@
     <server>localhost</server>
     <type>POSTGRESQL</type>
     <access>Native</access>
-    <database>proyectoMainBI</database>
+    <database>${DB_NAME}</database>
     <port>5432</port>
     <username>postgres</username>
     <password>Encrypted 2be98afc86aa7f2e4cb1aa763d79eaed8</password>
@@ -20,7 +20,7 @@
     <name>Tabla Contrato Origen</name>
     <type>TableInput</type>
     <connection>BI</connection>
-    <sql>SELECT * FROM BD_TRANSACCIONAL.CONTRATO</sql>
+    <sql>SELECT * FROM ${SRC_DB_NAME}.CONTRATO</sql>
     <GUI>
       <xloc>120</xloc>
       <yloc>128</yloc>

@@ -9,7 +9,7 @@
     <server>localhost</server>
     <type>POSTGRESQL</type>
     <access>Native</access>
-    <database>proyectoMainBI</database>
+    <database>${DB_NAME}</database>
     <port>5432</port>
     <username>postgres</username>
     <password>Encrypted 2be98afc86aa7f2e4cb1aa763d79eaed8</password>
@@ -21,7 +21,7 @@
     <type>TableInput</type>
     <connection>BI</connection>
     <sql>SELECT cod_cliente AS CodigoCliente, ci_rif AS CedulaRif, nb_cliente AS NombreCliente, telefono AS Telefono, direccion AS Direccion, email AS Email
-FROM BD_TRANSACCIONAL.CLIENTE</sql>
+FROM ${SRC_DB_NAME}.CLIENTE</sql>
     <GUI>
       <xloc>144</xloc>
       <yloc>128</yloc>

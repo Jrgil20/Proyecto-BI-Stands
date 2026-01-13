@@ -2,7 +2,7 @@
 <transformation>
   <info>
     <name>ETL-D04_DimTipoStand</name>
-    <description>Carga DimTipoStand desde BD_TRANSACCIONAL.TIPO_STAND</description>
+    <description>Carga DimTipoStand desde ${SRC_DB_NAME}.TIPO_STAND</description>
     <trans_type>Normal</trans_type>
   </info>
   <connection>
@@ -10,7 +10,7 @@
     <server>localhost</server>
     <type>POSTGRESQL</type>
     <access>Native</access>
-    <database>proyectoMainBI</database>
+    <database>${DB_NAME}</database>
     <port>5432</port>
     <username>postgres</username>
     <password>Encrypted 2be98afc86aa7f2e4cb1aa763d79eaed8</password>
@@ -20,7 +20,7 @@
     <name>Tabla TipoStand Origen</name>
     <type>TableInput</type>
     <connection>BI</connection>
-    <sql>SELECT cod_tipo_stand AS CodigoTipoStand, nb_tipo_stand AS TipoStand FROM BD_TRANSACCIONAL.TIPO_STAND</sql>
+    <sql>SELECT cod_tipo_stand AS CodigoTipoStand, nb_tipo_stand AS TipoStand FROM ${SRC_DB_NAME}.TIPO_STAND</sql>
     <GUI>
       <xloc>144</xloc>
       <yloc>128</yloc>
