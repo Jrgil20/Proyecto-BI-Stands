@@ -1,3 +1,150 @@
+-- DIMENSIÓN ESPECÍFICA: VISITANTE
+-- =====================================================
+CREATE SEQUENCE data_warehouse.SeqVisitante START WITH 1 INCREMENT BY 1;
+
+CREATE TABLE data_warehouse.DimVisitante (
+    IdVisitante NUMERIC PRIMARY KEY DEFAULT nextval('data_warehouse.SeqVisitante'),
+    CodigoVisitante NUMERIC,
+    Cedula NUMERIC,
+    NombreVisitante VARCHAR(100),
+    Sexo VARCHAR(1)
+);
+
+-- =====================================================
+-- DIMENSIÓN ESPECÍFICA: HORA
+-- (Para análisis de horas pico)
+-- =====================================================
+CREATE SEQUENCE data_warehouse.SeqHora START WITH 1 INCREMENT BY 1;
+
+CREATE TABLE data_warehouse.DimHora (
+    IdHora NUMERIC PRIMARY KEY DEFAULT nextval('data_warehouse.SeqHora'),
+    Hora24h VARCHAR(5),
+    Turno VARCHAR(20)
+);
+
+-- =====================================================
+-- DIMENSIÓN ESPECÍFICA: CALIFICACIÓN
+-- (Separa datos de encuesta de satisfacción)
+-- =====================================================
+CREATE SEQUENCE data_warehouse.SeqCalificacion START WITH 1 INCREMENT BY 1;
+
+CREATE TABLE data_warehouse.DimCalificacion (
+    IdCalificacion NUMERIC PRIMARY KEY DEFAULT nextval('data_warehouse.SeqCalificacion'),
+    RecomiendaAmigo VARCHAR(10),
+    NumeroEstrellas NUMERIC,
+    DescripcionEstrellas VARCHAR(20)
+);
+
+-- =====================================================
+-- TABLA DE HECHOS 1: ALQUILER
+-- Proceso: Gestión de Alquileres (Ingresos)
+-- Granularidad: Una fila por cada contrato de alquiler
+-- =====================================================
+CREATE TABLE data_warehouse.FactAlquiler (
+    IdEvento NUMERIC,
+    IdTiempo NUMERIC,
+    IdCliente NUMERIC,
+    IdTipoStand NUMERIC,
+    IdCategoria NUMERIC,
+    NumeroContrato NUMERIC,
+    NumeroStand NUMERIC,
+    MontoAlquiler NUMERIC(10,4),
+    MetrosCuadradosAlquilados NUMERIC(10,4),
+    CantidadContratos NUMERIC DEFAULT 1,
+
+    PRIMARY KEY (IdEvento, IdTiempo, IdCliente, IdTipoStand, IdCategoria, NumeroContrato, NumeroStand),
+    FOREIGN KEY (IdEvento) REFERENCES data_warehouse.DimEvento(IdEvento),
+    FOREIGN KEY (IdTiempo) REFERENCES data_warehouse.DimTiempo(IdTiempo),
+    FOREIGN KEY (IdCliente) REFERENCES data_warehouse.DimCliente(IdCliente),
+    FOREIGN KEY (IdTipoStand) REFERENCES data_warehouse.DimTipoStand(IdTipoStand),
+    FOREIGN KEY (IdCategoria) REFERENCES data_warehouse.DimCategoria(IdCategoria)
+);
+
+-- =====================================================
+-- TABLA DE HECHOS 2: VISITA
+-- Proceso: Gestión de Visitas y Calidad
+-- Granularidad: Una fila por cada entrada de visitante
+-- =====================================================
+CREATE TABLE data_warehouse.FactVisita (
+    IdEvento NUMERIC,
+    IdTiempo NUMERIC,
+    IdHora NUMERIC,
+    IdVisitante NUMERIC,
+    IdCalificacion NUMERIC,
+    NumeroEntrada NUMERIC,
+    CantidadVisitas NUMERIC DEFAULT 1,
+    ValorCalificacion NUMERIC,
+
+    PRIMARY KEY (IdEvento, IdTiempo, IdHora, IdVisitante, NumeroEntrada),
+    FOREIGN KEY (IdEvento) REFERENCES data_warehouse.DimEvento(IdEvento),
+    FOREIGN KEY (IdTiempo) REFERENCES data_warehouse.DimTiempo(IdTiempo),
+    FOREIGN KEY (IdHora) REFERENCES data_warehouse.DimHora(IdHora),
+    FOREIGN KEY (IdVisitante) REFERENCES data_warehouse.DimVisitante(IdVisitante),
+    FOREIGN KEY (IdCalificacion) REFERENCES data_warehouse.DimCalificacion(IdCalificacion)
+);
+
+-- =====================================================
+-- TABLA DE HECHOS 3: METAS STAND
+-- Proceso: Gestión de Metas (Planificación de Stands)
+-- Granularidad: Una fila por tipo de stand para cada evento
+-- =====================================================
+CREATE TABLE data_warehouse.FactMetasStand (
+    IdEvento NUMERIC,
+    IdTiempo NUMERIC,
+    IdTipoStand NUMERIC,
+    CantidadEstimada NUMERIC,
+    MetrosCuadradosEstimadosTotales NUMERIC(10,4),
+    PrecioUnitario NUMERIC(10,4),
+
+    PRIMARY KEY (IdEvento, IdTiempo, IdTipoStand),
+    FOREIGN KEY (IdEvento) REFERENCES data_warehouse.DimEvento(IdEvento),
+    FOREIGN KEY (IdTiempo) REFERENCES data_warehouse.DimTiempo(IdTiempo),
+    FOREIGN KEY (IdTipoStand) REFERENCES data_warehouse.DimTipoStand(IdTipoStand)
+);
+
+-- =====================================================
+-- TABLA DE HECHOS 4: METAS EVENTO
+-- Proceso: Gestión de Metas (Planificación General del Evento)
+-- Granularidad: Una fila por evento planificado
+-- =====================================================
+CREATE TABLE data_warehouse.FactMetasEvento (
+    IdEvento NUMERIC,
+    IdSede NUMERIC,
+    IdTiempo NUMERIC,
+    CantidadEstimadaVisitantes NUMERIC,
+    MetaIngresos NUMERIC(10,4),
+
+    PRIMARY KEY (IdEvento, IdSede, IdTiempo),
+    FOREIGN KEY (IdEvento) REFERENCES data_warehouse.DimEvento(IdEvento),
+    FOREIGN KEY (IdSede) REFERENCES data_warehouse.DimSede(IdSede),
+    FOREIGN KEY (IdTiempo) REFERENCES data_warehouse.DimTiempo(IdTiempo)
+);
+
+-- *******************************************
+-- PERMISOS PARA USUARIO ETL/BI
+-- *******************************************
+-- Otorgar permisos en schema public
+GRANT USAGE ON SCHEMA public TO inteligencia_negocios;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO inteligencia_negocios;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO inteligencia_negocios;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA public
+GRANT ALL PRIVILEGES ON TABLES TO inteligencia_negocios;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA public
+GRANT ALL PRIVILEGES ON SEQUENCES TO inteligencia_negocios;
+
+-- Otorgar permisos en schema data_warehouse
+GRANT USAGE ON SCHEMA data_warehouse TO inteligencia_negocios;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA data_warehouse TO inteligencia_negocios;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA data_warehouse TO inteligencia_negocios;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA data_warehouse
+GRANT ALL PRIVILEGES ON TABLES TO inteligencia_negocios;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA data_warehouse
+GRANT ALL PRIVILEGES ON SEQUENCES TO inteligencia_negocios;
+
 -- =====================================================
 -- MODELO RELACIONAL Y DIMENSIONAL: SISTEMA DE EVENTOS Y ALQUILERES
 -- ExpoEventos 2526 C.A.
