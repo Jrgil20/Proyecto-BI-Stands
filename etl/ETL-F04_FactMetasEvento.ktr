@@ -1,7 +1,7 @@
 <!-- Skeleton transformation: ETL-F04_FactMetasEvento.ktr -->
 <!-- Steps to implement:
   Option A (single query): use CTE to compute SUM(precio * cantidad_estimada) per event and join with EVENTO
-  Option B (pipeline): aggregate EVENTO_STAND by cod_evento to compute IngresosTotalesEstimados, join with EVENTO and lookup DimEvento/DimSede/DimTiempo
+  Option B (pipeline): aggregate public.contrato (o fact.FactAlquiler) by cod_evento to compute IngresosReales y MetrosAlquilados, join with EVENTO and lookup DimEvento/DimSede/DimTiempo
   1. Compute MetaIngresos (aggregation)
   2. Lookup: DimEvento, DimSede, DimTiempo
   3. Add constant: CantidadEstimadaVisitantes (or lookup from auxiliary table)

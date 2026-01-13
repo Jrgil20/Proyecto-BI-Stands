@@ -1,6 +1,7 @@
 <!-- Skeleton transformation: ETL-F03_FactMetasStand.ktr -->
 <!-- Steps to implement:
-  1. Table Input: SELECT * FROM ${SRC_DB_NAME}.EVENTO_STAND es JOIN ${SRC_DB_NAME}.EVENTO e ON es.cod_evento = e.cod_evento
+  1. Table Input: Agregación desde ${SRC_DB_NAME}.CONTRATO para obtener métricas reales por evento y tipo de stand:
+     "SELECT c.cod_evento, c.cod_tipo_stand, SUM(c.mts2) AS mts2_alquilados, SUM(c.monto) AS ingresos_reales, COUNT(c.nro_contrato) AS contratos FROM ${SRC_DB_NAME}.CONTRATO c GROUP BY c.cod_evento, c.cod_tipo_stand"
   2. Lookups: DimEvento (by CodigoEvento), DimTiempo (by e.fecha_inicio), DimTipoStand
   3. Calculations: MetrosCuadradosEstimadosTotales = es.mts2 * es.cantidad_estimada
   4. Table Output: fact.fact_metas_stand

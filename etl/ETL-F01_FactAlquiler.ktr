@@ -20,7 +20,17 @@
     <name>Tabla Contrato Origen</name>
     <type>TableInput</type>
     <connection>BI</connection>
-    <sql>SELECT * FROM ${SRC_DB_NAME}.CONTRATO</sql>
+    <sql>SELECT
+    nro_contrato,
+    nro_stand,
+    mts2,
+    monto,
+    cod_cliente,
+    cod_evento,
+    cod_sub_categoria,
+    cod_tipo_stand,
+    fecha_alquiler
+FROM ${SRC_DB_NAME}.CONTRATO</sql>
     <GUI>
       <xloc>120</xloc>
       <yloc>128</yloc>
@@ -28,6 +38,39 @@
     </GUI>
   </step>
 
+  <!-- Validaciones: campos críticos no nulos -->
+  <step>
+    <name>Validar Campos Origen</name>
+    <type>FilterRows</type>
+    <condition>nro_contrato IS NOT NULL AND nro_stand IS NOT NULL AND monto IS NOT NULL AND fecha_alquiler IS NOT NULL</condition>
+    <GUI>
+      <xloc>240</xloc>
+      <yloc>128</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+
+  <!-- Rechazos validación origen -->
+  <step>
+    <name>Rechazos Origen</name>
+    <type>TextFileOutput</type>
+    <filename>./etl/rejects/FactAlquiler_validation_fail.csv</filename>
+    <append>N</append>
+    <fields>
+      <field>Name>nro_contrato</field>
+      <field>Name>nro_stand</field>
+      <field>Name>monto</field>
+      <field>Name>fecha_alquiler</field>
+      <field>Name>Reason</field>
+    </fields>
+    <GUI>
+      <xloc>240</xloc>
+      <yloc>224</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+
+  <!-- Conectar en Spoon: 'Tabla Contrato Origen' -> 'Validar Campos Origen' (TRUE) -> Lookups; (FALSE) -> 'Rechazos Origen' -->
   <!-- Lookups: DimEvento by CodigoEvento -->
   <step>
     <name>Lookup DimEvento</name>
@@ -169,12 +212,12 @@
     </GUI>
   </step>
 
-  <!-- Table Output to fact -->
+  <!-- Table Output to data_warehouse -->
   <step>
     <name>Fact Alquiler</name>
     <type>TableOutput</type>
     <connection>BI</connection>
-    <schema>fact</schema>
+    <schema>data_warehouse</schema>
     <table>FactAlquiler</table>
     <commit>100</commit>
     <use_batch>Y</use_batch>
