@@ -1,0 +1,9 @@
+# Ignore ETL credentials and local files
+etl/kettle.properties
+*.keystore
+*.jks
+*.bak
+*.orig
+# OS files
+.DS_Store
+Thumbs.db

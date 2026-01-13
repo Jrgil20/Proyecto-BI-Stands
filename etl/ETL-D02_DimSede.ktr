@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name>ETL-D02_DimSede</name>
+    <description>Carga DimSede desde BD_TRANSACCIONAL.SEDE + CIUDAD + PAIS</description>
+    <trans_type>Normal</trans_type>
+  </info>
+  <connection>
+    <name>BI</name>
+    <server>localhost</server>
+    <type>POSTGRESQL</type>
+    <access>Native</access>
+    <database>proyectoMainBI</database>
+    <port>5432</port>
+    <username>postgres</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb1aa763d79eaed8</password>
+  </connection>
+
+  <step>
+    <name>Tabla Sede Origen</name>
+    <type>TableInput</type>
+    <connection>BI</connection>
+    <sql>SELECT s.cod_sede AS CodigoSede, s.nb_sede AS NombreSede, c.nb_ciudad AS Ciudad, p.nb_pais AS Pais
+FROM BD_TRANSACCIONAL.SEDE s
+INNER JOIN BD_TRANSACCIONAL.CIUDAD c ON s.cod_ciudad = c.cod_ciudad
+INNER JOIN BD_TRANSACCIONAL.PAIS p ON c.cod_pais = p.cod_pais</sql>
+    <GUI>
+      <xloc>144</xloc>
+      <yloc>128</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+
+  <step>
+    <name>Quitar Duplicados</name>
+    <type>UniqueRows</type>
+    <field>CodigoSede</field>
+    <GUI>
+      <xloc>384</xloc>
+      <yloc>128</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+
+  <step>
+    <name>Mapear Campos</name>
+    <type>SelectValues</type>
+    <fields>
+      <field>
+        <name>CodigoSede</name>
+        <rename>CodigoSede</rename>
+      </field>
+      <field>
+        <name>NombreSede</name>
+        <rename>NombreSede</rename>
+      </field>
+      <field>
+        <name>Ciudad</name>
+        <rename>Ciudad</rename>
+      </field>
+      <field>
+        <name>Pais</name>
+        <rename>Pais</rename>
+      </field>
+    </fields>
+    <GUI>
+      <xloc>576</xloc>
+      <yloc>128</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+
+  <step>
+    <name>Dim Sede</name>
+    <type>TableOutput</type>
+    <connection>BI</connection>
+    <schema>dim</schema>
+    <table>DimSede</table>
+    <commit>100</commit>
+    <use_batch>Y</use_batch>
+    <specify_fields>Y</specify_fields>
+    <fields>
+      <!-- IdSede left to DB default (SeqSede) -->
+      <field>
+        <column_name>CodigoSede</column_name>
+        <stream_name>CodigoSede</stream_name>
+      </field>
+      <field>
+        <column_name>NombreSede</column_name>
+        <stream_name>NombreSede</stream_name>
+      </field>
+      <field>
+        <column_name>Ciudad</column_name>
+        <stream_name>Ciudad</stream_name>
+      </field>
+      <field>
+        <column_name>Pais</column_name>
+        <stream_name>Pais</stream_name>
+      </field>
+    </fields>
+    <GUI>
+      <xloc>816</xloc>
+      <yloc>128</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+
+  <!-- Notes: add reject handling and logging steps in Spoon -->
+</transformation>

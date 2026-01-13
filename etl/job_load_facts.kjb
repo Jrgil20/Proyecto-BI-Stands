@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Skeleton Pentaho Job: job_load_facts.kjb -->
+<job>
+  <!-- Job steps (implement these as Job entries in Spoon): -->
+  <!-- Precondition: job_load_dimensions.kjb must complete successfully -->
+  <!-- 1) ETL-F01_FactAlquiler.ktr -->
+  <!-- 2) ETL-F02_FactVisita.ktr -->
+  <!-- 3) ETL-F03_FactMetasStand.ktr -->
+  <!-- 4) ETL-F04_FactMetasEvento.ktr -->
+  <!-- Post-load: run tests/sql_validation_checks.sql and check for FK nulls and totals -->
+  <!-- On failure: stop execution, log details and send notification -->
+</job>

@@ -1,0 +1,7 @@
+<!-- Skeleton transformation: ETL-F03_FactMetasStand.ktr -->
+<!-- Steps to implement:
+  1. Table Input: SELECT * FROM BD_TRANSACCIONAL.EVENTO_STAND es JOIN BD_TRANSACCIONAL.EVENTO e ON es.cod_evento = e.cod_evento
+  2. Lookups: DimEvento (by CodigoEvento), DimTiempo (by e.fecha_inicio), DimTipoStand
+  3. Calculations: MetrosCuadradosEstimadosTotales = es.mts2 * es.cantidad_estimada
+  4. Table Output: fact.fact_metas_stand
+-->

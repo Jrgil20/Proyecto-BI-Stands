@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name>ETL-F01_FactAlquiler</name>
+    <description>Carga FactAlquiler con lookups a dimensiones y manejo de errores</description>
+  </info>
+  <connection>
+    <name>BI</name>
+    <server>localhost</server>
+    <type>POSTGRESQL</type>
+    <access>Native</access>
+    <database>proyectoMainBI</database>
+    <port>5432</port>
+    <username>postgres</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb1aa763d79eaed8</password>
+  </connection>
+
+  <!-- Step: Read contratos -->
+  <step>
+    <name>Tabla Contrato Origen</name>
+    <type>TableInput</type>
+    <connection>BI</connection>
+    <sql>SELECT * FROM BD_TRANSACCIONAL.CONTRATO</sql>
+    <GUI>
+      <xloc>120</xloc>
+      <yloc>128</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+
+  <!-- Lookups: DimEvento by CodigoEvento -->
+  <step>
+    <name>Lookup DimEvento</name>
+    <type>DatabaseLookup</type>
+    <connection>BI</connection>
+    <schema>dim</schema>
+    <table>DimEvento</table>
+    <key_lookup>CodigoEvento</key_lookup>
+    <key_stream>cod_evento</key_stream>
+    <value_field>IdEvento</value_field>
+    <value_name>IdEvento</value_name>
+    <GUI>
+      <xloc>360</xloc>
+      <yloc>64</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+
+  <!-- Lookup DimTiempo by Fecha -->
+  <step>
+    <name>Lookup DimTiempo</name>
+    <type>DatabaseLookup</type>
+    <connection>BI</connection>
+    <schema>dim</schema>
+    <table>DimTiempo</table>
+    <key_lookup>Fecha</key_lookup>
+    <key_stream>fecha_alquiler</key_stream>
+    <value_field>IdTiempo</value_field>
+    <value_name>IdTiempo</value_name>
+    <GUI>
+      <xloc>360</xloc>
+      <yloc>160</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+
+  <!-- Lookup DimCliente by CodigoCliente -->
+  <step>
+    <name>Lookup DimCliente</name>
+    <type>DatabaseLookup</type>
+    <connection>BI</connection>
+    <schema>dim</schema>
+    <table>DimCliente</table>
+    <key_lookup>CodigoCliente</key_lookup>
+    <key_stream>cod_cliente</key_stream>
+    <value_field>IdCliente</value_field>
+    <value_name>IdCliente</value_name>
+    <GUI>
+      <xloc>600</xloc>
+      <yloc>64</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+
+  <!-- Lookup DimTipoStand by CodigoTipoStand -->
+  <step>
+    <name>Lookup DimTipoStand</name>
+    <type>DatabaseLookup</type>
+    <connection>BI</connection>
+    <schema>dim</schema>
+    <table>DimTipoStand</table>
+    <key_lookup>CodigoTipoStand</key_lookup>
+    <key_stream>cod_tipo_stand</key_stream>
+    <value_field>IdTipoStand</value_field>
+    <value_name>IdTipoStand</value_name>
+    <GUI>
+      <xloc>600</xloc>
+      <yloc>160</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+
+  <!-- Lookup DimCategoria by CodigoSubcategoria -->
+  <step>
+    <name>Lookup DimCategoria</name>
+    <type>DatabaseLookup</type>
+    <connection>BI</connection>
+    <schema>dim</schema>
+    <table>DimCategoria</table>
+    <key_lookup>CodigoSubcategoria</key_lookup>
+    <key_stream>cod_sub_categoria</key_stream>
+    <value_field>IdCategoria</value_field>
+    <value_name>IdCategoria</value_name>
+    <GUI>
+      <xloc>840</xloc>
+      <yloc>64</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+
+  <!-- Filter rows: keep only records with all FK lookups present -->
+  <step>
+    <name>Filtrar Lookups Fallidos</name>
+    <type>FilterRows</type>
+    <condition>IdEvento IS NOT NULL AND IdTiempo IS NOT NULL AND IdCliente IS NOT NULL AND IdTipoStand IS NOT NULL AND IdCategoria IS NOT NULL</condition>
+    <GUI>
+      <xloc>1080</xloc>
+      <yloc>128</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+
+  <!-- Rejected rows output -->
+  <step>
+    <name>Rechazos Lookups</name>
+    <type>TextFileOutput</type>
+    <filename>./etl/rejects/FactAlquiler_lookup_fail.csv</filename>
+    <append>N</append>
+    <fields>
+      <field>Name>cod_contrato</field>
+      <field>Name>cod_evento</field>
+      <field>Name>cod_cliente</field>
+      <field>Name>cod_tipo_stand</field>
+      <field>Name>cod_sub_categoria</field>
+      <field>Name>Reason</field>
+    </fields>
+    <GUI>
+      <xloc>1080</xloc>
+      <yloc>224</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+
+  <!-- Add constants -->
+  <step>
+    <name>Agregar Constantes</name>
+    <type>AddConstants</type>
+    <fields>
+      <field>
+        <name>CantidadContratos</name>
+        <type>Integer</type>
+        <value>1</value>
+      </field>
+    </fields>
+    <GUI>
+      <xloc>1320</xloc>
+      <yloc>128</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+
+  <!-- Table Output to fact -->
+  <step>
+    <name>Fact Alquiler</name>
+    <type>TableOutput</type>
+    <connection>BI</connection>
+    <schema>fact</schema>
+    <table>FactAlquiler</table>
+    <commit>100</commit>
+    <use_batch>Y</use_batch>
+    <specify_fields>Y</specify_fields>
+    <fields>
+      <field>
+        <column_name>IdEvento</column_name>
+        <stream_name>IdEvento</stream_name>
+      </field>
+      <field>
+        <column_name>IdTiempo</column_name>
+        <stream_name>IdTiempo</stream_name>
+      </field>
+      <field>
+        <column_name>IdCliente</column_name>
+        <stream_name>IdCliente</stream_name>
+      </field>
+      <field>
+        <column_name>IdTipoStand</column_name>
+        <stream_name>IdTipoStand</stream_name>
+      </field>
+      <field>
+        <column_name>IdCategoria</column_name>
+        <stream_name>IdCategoria</stream_name>
+      </field>
+      <field>
+        <column_name>NumeroContrato</column_name>
+        <stream_name>nro_contrato</stream_name>
+      </field>
+      <field>
+        <column_name>NumeroStand</column_name>
+        <stream_name>nro_stand</stream_name>
+      </field>
+      <field>
+        <column_name>MontoAlquiler</column_name>
+        <stream_name>monto</stream_name>
+      </field>
+      <field>
+        <column_name>MetrosCuadradosAlquilados</column_name>
+        <stream_name>mts2</stream_name>
+      </field>
+      <field>
+        <column_name>CantidadContratos</column_name>
+        <stream_name>CantidadContratos</stream_name>
+      </field>
+    </fields>
+    <GUI>
+      <xloc>1560</xloc>
+      <yloc>128</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+
+  <!-- Notes: run tests/tests_sql_validation after load to verify FK consistency -->
+</transformation>

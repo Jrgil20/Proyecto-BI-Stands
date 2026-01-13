@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name>ETL-D03_DimEvento</name>
+    <description>Transformación para cargar DimEvento desde BD_TRANSACCIONAL.EVENTO y TIPO_EVENTO</description>
+    <trans_type>Normal</trans_type>
+  </info>
+  <connection>
+    <name>BI</name>
+    <server>localhost</server>
+    <type>POSTGRESQL</type>
+    <access>Native</access>
+    <database>proyectoMainBI</database>
+    <port>5432</port>
+    <username>postgres</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb1aa763d79eaed8</password>
+  </connection>
+
+  <!-- Step: Table Input -->
+  <step>
+    <name>Tabla Evento Origen</name>
+    <type>TableInput</type>
+    <connection>BI</connection>
+    <sql>SELECT 
+  e.cod_evento AS CodigoEvento,
+  e.nb_evento AS NombreEvento,
+  e.descripcion AS Descripcion,
+  te.nb_tipo_evento AS TipoEvento
+FROM BD_TRANSACCIONAL.EVENTO e
+INNER JOIN BD_TRANSACCIONAL.TIPO_EVENTO te ON e.cod_tipo_evento = te.cod_tipo_evento
+</sql>
+    <GUI>
+      <xloc>144</xloc>
+      <yloc>128</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+
+  <!-- Step: Unique Rows (dedupe by CodigoEvento) -->
+  <step>
+    <name>Quitar Duplicados</name>
+    <type>UniqueRows</type>
+    <description>Eliminar filas duplicadas por CodigoEvento</description>
+    <field>CodigoEvento</field>
+    <GUI>
+      <xloc>384</xloc>
+      <yloc>128</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+
+  <!-- Step: Select Values (renombrar/alinear nombres si es necesario) -->
+  <step>
+    <name>Mapear Campos</name>
+    <type>SelectValues</type>
+    <fields>
+      <field>
+        <name>CodigoEvento</name>
+        <rename>CodigoEvento</rename>
+      </field>
+      <field>
+        <name>NombreEvento</name>
+        <rename>NombreEvento</rename>
+      </field>
+      <field>
+        <name>Descripcion</name>
+        <rename>Descripcion</rename>
+      </field>
+      <field>
+        <name>TipoEvento</name>
+        <rename>TipoEvento</rename>
+      </field>
+    </fields>
+    <GUI>
+      <xloc>576</xloc>
+      <yloc>128</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+
+  <!-- Step: Table Output -->
+  <step>
+    <name>Dim Evento</name>
+    <type>TableOutput</type>
+    <connection>BI</connection>
+    <schema>dim</schema>
+    <table>DimEvento</table>
+    <commit>100</commit>
+    <use_batch>Y</use_batch>
+    <specify_fields>Y</specify_fields>
+    <fields>
+      <!-- IdEvento left out to let DB use DEFAULT nextval('SeqEvento') -->
+      <field>
+        <column_name>CodigoEvento</column_name>
+        <stream_name>CodigoEvento</stream_name>
+      </field>
+      <field>
+        <column_name>NombreEvento</column_name>
+        <stream_name>NombreEvento</stream_name>
+      </field>
+      <field>
+        <column_name>Descripcion</column_name>
+        <stream_name>Descripcion</stream_name>
+      </field>
+      <field>
+        <column_name>TipoEvento</column_name>
+        <stream_name>TipoEvento</stream_name>
+      </field>
+    </fields>
+    <GUI>
+      <xloc>816</xloc>
+      <yloc>128</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+
+  <!-- Notes: - Use DB defaults for IdEvento (SeqEvento) - Add error handling/ reject steps in Spoon -->
+</transformation>

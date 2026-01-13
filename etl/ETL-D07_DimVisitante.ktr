@@ -1,0 +1,6 @@
+<!-- Skeleton transformation: ETL-D07_DimVisitante.ktr -->
+<!-- Steps to implement:
+  1. Table Input: SELECT cod_visitante, cedula, nb_visitante, sexo FROM BD_TRANSACCIONAL.VISITANTE
+  2. Sequence: nextval('SeqVisitante')
+  3. Basic cleaning and write to dw_eventos.dim_visitante
+-->

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name>ETL-D04_DimTipoStand</name>
+    <description>Carga DimTipoStand desde BD_TRANSACCIONAL.TIPO_STAND</description>
+    <trans_type>Normal</trans_type>
+  </info>
+  <connection>
+    <name>BI</name>
+    <server>localhost</server>
+    <type>POSTGRESQL</type>
+    <access>Native</access>
+    <database>proyectoMainBI</database>
+    <port>5432</port>
+    <username>postgres</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb1aa763d79eaed8</password>
+  </connection>
+
+  <step>
+    <name>Tabla TipoStand Origen</name>
+    <type>TableInput</type>
+    <connection>BI</connection>
+    <sql>SELECT cod_tipo_stand AS CodigoTipoStand, nb_tipo_stand AS TipoStand FROM BD_TRANSACCIONAL.TIPO_STAND</sql>
+    <GUI>
+      <xloc>144</xloc>
+      <yloc>128</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+
+  <step>
+    <name>Quitar Duplicados</name>
+    <type>UniqueRows</type>
+    <field>CodigoTipoStand</field>
+    <GUI>
+      <xloc>384</xloc>
+      <yloc>128</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+
+  <step>
+    <name>Mapear Campos</name>
+    <type>SelectValues</type>
+    <fields>
+      <field>
+        <name>CodigoTipoStand</name>
+        <rename>CodigoTipoStand</rename>
+      </field>
+      <field>
+        <name>TipoStand</name>
+        <rename>TipoStand</rename>
+      </field>
+    </fields>
+    <GUI>
+      <xloc>576</xloc>
+      <yloc>128</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+
+  <step>
+    <name>Dim TipoStand</name>
+    <type>TableOutput</type>
+    <connection>BI</connection>
+    <schema>dim</schema>
+    <table>DimTipoStand</table>
+    <commit>100</commit>
+    <use_batch>Y</use_batch>
+    <specify_fields>Y</specify_fields>
+    <fields>
+      <!-- IdTipoStand left to DB default (SeqTipoStand) -->
+      <field>
+        <column_name>CodigoTipoStand</column_name>
+        <stream_name>CodigoTipoStand</stream_name>
+      </field>
+      <field>
+        <column_name>TipoStand</column_name>
+        <stream_name>TipoStand</stream_name>
+      </field>
+    </fields>
+    <GUI>
+      <xloc>816</xloc>
+      <yloc>128</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+
+  <!-- Notes: add reject handling and logging steps in Spoon -->
+</transformation>

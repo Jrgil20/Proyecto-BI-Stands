@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Master job skeleton: Executes dimensions job then facts job -->
+<job>
+  <!-- Flow: Start -> job_load_dimensions.kjb -> job_load_facts.kjb -> Success -->
+  <!-- Implement as Job entries in Spoon and add failure handling and notifications -->
+</job>

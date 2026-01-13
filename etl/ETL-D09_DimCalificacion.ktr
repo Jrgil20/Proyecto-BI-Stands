@@ -1,0 +1,7 @@
+<!-- Skeleton transformation: ETL-D09_DimCalificacion.ktr -->
+<!-- Steps to implement:
+  1. Table Input: SELECT cod_leyenda_estrellas as NumeroEstrellas, nb_descripcion as DescripcionEstrellas FROM BD_TRANSACCIONAL.LEYENDA_ESTRELLAS
+  2. Derive RecomiendaAmigo = CASE WHEN cod_leyenda_estrellas <= 3 THEN 'No' ELSE 'Sí' END
+  3. Sequence: nextval('SeqCalificacion')
+  4. Table Output: dw_eventos.dim_calificacion
+-->

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name>ETL-D06_DimCliente</name>
+    <description>Carga DimCliente: lectura, limpieza, deduplicación y carga</description>
+  </info>
+  <connection>
+    <name>BI</name>
+    <server>localhost</server>
+    <type>POSTGRESQL</type>
+    <access>Native</access>
+    <database>proyectoMainBI</database>
+    <port>5432</port>
+    <username>postgres</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb1aa763d79eaed8</password>
+  </connection>
+
+  <!-- Step: Table Input -->
+  <step>
+    <name>Tabla Cliente Origen</name>
+    <type>TableInput</type>
+    <connection>BI</connection>
+    <sql>SELECT cod_cliente AS CodigoCliente, ci_rif AS CedulaRif, nb_cliente AS NombreCliente, telefono AS Telefono, direccion AS Direccion, email AS Email
+FROM BD_TRANSACCIONAL.CLIENTE</sql>
+    <GUI>
+      <xloc>144</xloc>
+      <yloc>128</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+
+  <!-- Step: Limpieza básica (trim, normalizar CI/RIF, validar email) -->
+  <step>
+    <name>Limpieza y Normalización</name>
+    <type>ModifiedJavaScript</type>
+    <script>// Ejemplo de lógica JS:
+// CodigoCliente = CodigoCliente;
+// CedulaRif = CedulaRif ? CedulaRif.trim().toUpperCase() : null;
+// NombreCliente = NombreCliente ? NombreCliente.trim() : null;
+// Email = Email ? Email.trim().toLowerCase() : null;
+// validEmail = Email && Email.match(/^[^@\s]+@[^@\s]+\.[^@\s]+$/) ? true : false;</script>
+    <GUI>
+      <xloc>384</xloc>
+      <yloc>128</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+
+  <!-- Step: Filtrar emails invalidos (envía a rechazo) -->
+  <step>
+    <name>Filtrar Emails Inválidos</name>
+    <type>FilterRows</type>
+    <condition>validEmail = true</condition>
+    <GUI>
+      <xloc>624</xloc>
+      <yloc>128</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+
+  <!-- Step: Duplicados (elegir primera ocurrencia por CodigoCliente) -->
+  <step>
+    <name>Quitar Duplicados</name>
+    <type>GroupBy</type>
+    <group_field>CodigoCliente</group_field>
+    <aggregate_field>NombreCliente</aggregate_field>
+    <aggregate_type>FIRST</aggregate_type>
+    <GUI>
+      <xloc>864</xloc>
+      <yloc>128</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+
+  <!-- Step: Table Output -->
+  <step>
+    <name>Dim Cliente</name>
+    <type>TableOutput</type>
+    <connection>BI</connection>
+    <schema>dim</schema>
+    <table>DimCliente</table>
+    <commit>100</commit>
+    <use_batch>Y</use_batch>
+    <specify_fields>Y</specify_fields>
+    <fields>
+      <!-- IdCliente left to DB default SeqCliente -->
+      <field>
+        <column_name>CodigoCliente</column_name>
+        <stream_name>CodigoCliente</stream_name>
+      </field>
+      <field>
+        <column_name>CedulaRif</column_name>
+        <stream_name>CedulaRif</stream_name>
+      </field>
+      <field>
+        <column_name>NombreCliente</column_name>
+        <stream_name>NombreCliente</stream_name>
+      </field>
+      <field>
+        <column_name>Telefono</column_name>
+        <stream_name>Telefono</stream_name>
+      </field>
+      <field>
+        <column_name>Direccion</column_name>
+        <stream_name>Direccion</stream_name>
+      </field>
+      <field>
+        <column_name>Email</column_name>
+        <stream_name>Email</stream_name>
+      </field>
+    </fields>
+    <GUI>
+      <xloc>1104</xloc>
+      <yloc>128</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+
+  <!-- Step: Rechazos - Emails invalidos -->
+  <step>
+    <name>Rechazos Emails</name>
+    <type>TextFileOutput</type>
+    <filename>./etl/rejects/DimCliente_invalid_emails.csv</filename>
+    <append>N</append>
+    <fields>
+      <field>Name>CodigoCliente</field>
+      <field>Name>CedulaRif</field>
+      <field>Name>NombreCliente</field>
+      <field>Name>Email</field>
+      <field>Name>Reason</field>
+    </fields>
+    <GUI>
+      <xloc>624</xloc>
+      <yloc>208</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+
+  <!-- Notes: Ajustar reglas de deduplicación según política de negocio y añadir logging/metrics -->
+</transformation> 

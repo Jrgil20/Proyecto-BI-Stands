@@ -1,0 +1,7 @@
+<!-- Skeleton transformation: ETL-D08_DimHora.ktr -->
+<!-- Steps to implement:
+  1. Generate Rows or JavaScript to produce times from 08:00 to 21:30 every 30 minutes.
+  2. For each row: set Hora24h (HH:MM) and Turno = CASE WHEN hora < '12:00' THEN 'Mañana' WHEN hora < '18:00' THEN 'Tarde' ELSE 'Noche' END
+  3. Sequence: nextval('SeqHora')
+  4. Table Output: dw_eventos.dim_hora
+-->

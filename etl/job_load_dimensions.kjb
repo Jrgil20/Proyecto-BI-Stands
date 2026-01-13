@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Skeleton Pentaho Job: job_load_dimensions.kjb -->
+<job>
+  <!-- Job steps (implement these as Job entries in Spoon): -->
+  <!-- 1) ETL-D01_DimTiempo.ktr -->
+  <!-- 2) ETL-D02_DimSede.ktr -->
+  <!-- 3) ETL-D03_DimEvento.ktr -->
+  <!-- 4) ETL-D04_DimTipoStand.ktr -->
+  <!-- 5) ETL-D05_DimCategoria.ktr -->
+  <!-- 6) ETL-D06_DimCliente.ktr -->
+  <!-- 7) ETL-D07_DimVisitante.ktr -->
+  <!-- 8) ETL-D08_DimHora.ktr -->
+  <!-- 9) ETL-D09_DimCalificacion.ktr -->
+  <!-- Pre-flight checks: verify tables present and sequences aligned (run scripts/align_sequences.sql) -->
+  <!-- On failure: mark job step as failed, write details to monitoring table and send notification -->
+</job>
